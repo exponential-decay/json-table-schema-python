@@ -41,7 +41,7 @@ class JSONTableSchema(object):
       "any"        # value of field may be any type
    ]
 
-   __format_version__ = 0.1
+   __format_version__ = "1.0-pre3.1"
 
    required_field_descriptor_keys = ["id", "label", "type"]
 
