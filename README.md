@@ -8,7 +8,7 @@ See http://www.dataprotocols.org/en/latest/json-table-schema.html for details of
 Changelog
 ---------
 
-* Original by Martin Keegan: https://github.com/mk270/
+* Original by Martin Keegan: https://github.com/mk270/json-table-schema-python
 * Support originally for http://dataprotocols.org/json-table-schema/ releases prior to 1.0-pre3.1
 * Forked 15 August 2014
 * To add support for partial implementation of 1.0-pre3.1 upwards
