@@ -10,6 +10,8 @@
 # Latest, provides partial support for 1.0-pre3.1
 # Copyright (C) 2014  Ross Spencer
 #
+# More info: http://www.dataprotocols.org/en/latest/json-table-schema.html
+#
 # This programme is free software; you may redistribute and/or modify
 # it under the terms of the Apache Software Licence v2.0
 
@@ -19,11 +21,6 @@ class FormatError(Exception): pass
 class DuplicateFieldId(Exception): pass
 
 class JSONTableSchema(object):
-   """
-   A library to handle JSON Table Schema files.
-   See http://www.dataprotocols.org/en/latest/json-table-schema.html
-
-   """
 
    __valid_type_names__ = [
       "string",    # a string (of arbitrary length)
@@ -46,11 +43,8 @@ class JSONTableSchema(object):
    required_field_descriptor_keys = ["id", "label", "type"]
 
    def __init__(self, json_string=None):
-      """Initialise JSONTableSchema object, optionally from a JSON string
-
-      param: str json_string - the string from which to initialise
-
-      """
+      # Initialise JSONTableSchema object, optionally from a JSON string
+      
       self.fields = []
       self.format_version = self.__format_version__
       if json_string is not None:
