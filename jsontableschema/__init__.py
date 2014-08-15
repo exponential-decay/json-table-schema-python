@@ -16,9 +16,11 @@
 # it under the terms of the Apache Software Licence v2.0
 
 import json
+import sys
 
 class FormatError(Exception): pass
 class DuplicateFieldId(Exception): pass
+class NotJSONError(Exception): pass
 
 class JSONTableSchema(object):
 
@@ -47,13 +49,14 @@ class JSONTableSchema(object):
       
       self.fields = []
       self.format_version = self.__format_version__
+      
       if json_string is not None:
-         self.of_string(json_string)
+         try:
+            self.read_json(json.loads(json_string))
+         except ValueError:
+            sys.stderr.write("Invalid JSON object the likely cause. Please chack and try again.")
         
-   def of_string(self, s):
-      self.of_json(json.loads(s))
-        
-   def of_json(self, j):
+   def read_json(self, j):
       if "fields" not in j:
          raise FormatError("Field `fields' must be present in dictionary")
       field_list = j["fields"]
