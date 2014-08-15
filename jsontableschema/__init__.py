@@ -24,6 +24,8 @@ class NotJSONError(Exception): pass
 
 class JSONTableSchema(object):
 
+   # TODO: Validity of URIs for certain types... 
+   # TODO: Validity of non URI strings... 
    __valid_type_names__ = [
       ["string", "http://www.w3.org/2001/XMLSchema#string"],                                                               # a string (of arbitrary length)
       ["number", "http://www.w3.org/2001/XMLSchema#float"],                                                                # a number including floating point numbers
