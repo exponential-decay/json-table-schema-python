@@ -42,7 +42,7 @@ class JSONTableSchema(object):
 
    __format_version__ = "1.0-pre3.1"
 
-   required_field_descriptor_keys = ["id", "label", "type"]
+   required_field_descriptor_keys = ["name", "type"]
 
    def __init__(self, json_string=None):
       # Initialise JSONTableSchema object, optionally from a JSON string
@@ -56,52 +56,51 @@ class JSONTableSchema(object):
          except ValueError:
             sys.stderr.write("Invalid JSON object the likely cause. Please chack and try again.")
         
-   def read_json(self, j):
-      if "fields" not in j:
-         raise FormatError("Field `fields' must be present in dictionary")
-      field_list = j["fields"]
+   def read_json(self, json_string):
+      
+      if "fields" not in json_string:
+         raise FormatError("JSON array `fields' must be present JSON Table Schema hash.")
+ 
+      field_list = json_string["fields"]
       if not isinstance(field_list, list):
-         raise FormatError("Type of value of key `fields' must be array")
+         raise FormatError("JSON key `fields' must be array")
 
-      for idx, stanza in enumerate(field_list):
+      for i, stanza in enumerate(field_list):
+      
          if not isinstance(stanza, dict):
             err_str = "Field descriptor %d must be a dictionary" % idx
             raise FormatError(err_str)
 
-         for k in required_field_descriptor_keys:
-            if k not in stanza:
-               err_tmpl = "Field descriptor %d must contain key `%s'"
-               raise FormatError(err_tmpl % (idx, k))
+         for key in self.required_field_descriptor_keys:
+            if key not in stanza:
+               err_tmpl = "Field descriptor %d must contain key `%s'" % (i, key)
+               raise FormatError(err_tmpl)
 
-            self.add_field(field_id=stanza["id"], 
-               label=stanza["label"], 
-                  field_type=stanza["type"])
+         self.add_field(field_name=stanza["name"], field_type=stanza["type"])
 
-            self.format_version = j.get("json_table_schema_version",
-               self.__format_version__)
+         self.format_version = json_string.get("json_table_schema_version",
+            self.__format_version__)
 
    @property
    def field_ids(self):
-      return [ i["id"] for i in self.fields ]
+      return [ i["name"] for i in self.fields ]
             
-   def add_field(self, field_id=None, label=None, field_type=None):
-      if not isinstance(field_id, (str, unicode)):
-         raise FormatError("Field `id' must be a string")
-      if not isinstance(label, (str, unicode)):
-         raise FormatError("Field `label' must be a string")
+   def add_field(self, field_name=None, field_type=None):
+      if not isinstance(field_name, (str, unicode)):
+         raise FormatError("Field `name' must be a string")
       if not isinstance(field_type, (str, unicode)):
          raise FormatError("Field `type' must be a string")
 
-      if field_id in self.field_ids:
-         raise DuplicateFieldId("field_id")
+      if field_name in self.field_ids:
+         raise DuplicateFieldId("field_name")
             
-      if field_type not in self.__valid_type_names__:
-         err_tmpl = "Invalid type `%s' in field descriptor for `%s'"
-         raise FormatError(err_tmpl % (field_type, label))
+      #if field_type not in self.__valid_type_names__:
+      #   print "xxx"
+      #   err_tmpl = "Invalid type `%s' in field descriptor for `%s'"
+      #   raise FormatError(err_tmpl % (field_type, field_id))
 
       self.fields.append({
-         "id": field_id,
-         "label": label,
+         "name": field_name,
          "type": field_type
       })
         
