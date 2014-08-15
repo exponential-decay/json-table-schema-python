@@ -25,19 +25,19 @@ class NotJSONError(Exception): pass
 class JSONTableSchema(object):
 
    __valid_type_names__ = [
-      "string",    # a string (of arbitrary length)
-      "number",    # a number including floating point numbers
-      "integer",   # an integer
-      "date",      # a date. This MUST be in ISO6801 format YYYY-MM-DD or, if not, a format field must describe the structure
-      "time",      # a time without a date
-      "date-time", # a date-time. This MUST be in ISO8601 format of YYYY-MM-DDThh:mm:ssZ in UTC time or, if not, a format field must be provided
-      "boolean",   # a boolean value (1/0, true/false)
-      "binary",    # base64 representation of binary data
-      "object"     # (alias json) a JSON-encoded object
-      "geopoint",  # has one of the following structures
-      "geojson",   # as per <<http://http://geojson.org/>>
-      "array",     # an array
-      "any"        # value of field may be any type
+      ["string", "http://www.w3.org/2001/XMLSchema#string"],                                                               # a string (of arbitrary length)
+      ["number", "http://www.w3.org/2001/XMLSchema#float"],                                                                # a number including floating point numbers
+      ["integer", "http://www.w3.org/2001/XMLSchema#int", "http://www.w3.org/2001/XMLSchema#nonNegativeInteger"],          # an integer
+      ["date"],                                                                                                            # a date. This MUST be in ISO6801 format YYYY-MM-DD or, if not, a format field must describe the structure
+      ["time"],                                                                                                            # a time without a date
+      ["date-time", "http://www.w3.org/2001/XMLSchema#dateTime"],                                                          # a date-time. This MUST be in ISO8601 format of YYYY-MM-DDThh:mm:ssZ in UTC time or, if not, a format field must be provided
+      ["boolean", "http://www.w3.org/2001/XMLSchema#boolean"],                                                             # a boolean value (1/0, true/false)
+      ["binary"],                                                                                                          # base64 representation of binary data
+      ["object", "http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-object-type.html"],        # (alias json) a JSON-encoded object
+      ["geopoint", "http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-geo-point-type.html"],   # has one of the following structures
+      ["geojson"],                                                                                                         # as per <<http://http://geojson.org/>>
+      ["array", "http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-array-type.html"],          # an array
+      ["any", "http://www.w3.org/2001/XMLSchema#anyURI"]                                                                   # value of field may be any type
    ]
 
    __format_version__ = "1.0-pre3.1"
@@ -93,11 +93,8 @@ class JSONTableSchema(object):
 
       if field_name in self.field_ids:
          raise DuplicateFieldId("field_name")
-            
-      #if field_type not in self.__valid_type_names__:
-      #   print "xxx"
-      #   err_tmpl = "Invalid type `%s' in field descriptor for `%s'"
-      #   raise FormatError(err_tmpl % (field_type, field_id))
+      
+      self.check_type(field_type, field_name)
 
       self.fields.append({
          "name": field_name,
@@ -116,3 +113,18 @@ class JSONTableSchema(object):
       return {
          "json_table_schema_version": self.format_version, "fields": self.fields
       }
+
+   def check_type(self, field_type, field_name):
+      type_found = False
+      for field_category in self.__valid_type_names__:
+         for type in field_category:
+            if field_type == type:
+               type_found = True
+               break
+      
+      if type_found != True:
+         err_tmpl = "Invalid type `%s' in field descriptor for `%s'" % (field_type, field_name)
+         raise FormatError(err_tmpl)
+         
+         
+ 
