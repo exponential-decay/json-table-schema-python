@@ -1,8 +1,14 @@
-
+#!/usr/bin/env python
+#coding: utf-8
+#
 # json-table-schema, an implementation of the JSON Table Schema format,
 # by Martin Keegan
 #
-# Copyright (C) 2013  Martin Keegan
+# Original: https://github.com/mk270/json-table-schema-python
+# (Copyright (C) 2013  Martin Keegan)
+#
+# Latest, provides partial support for 1.0-pre3.1
+# Copyright (C) 2014  Ross Spencer
 #
 # This programme is free software; you may redistribute and/or modify
 # it under the terms of the Apache Software Licence v2.0
