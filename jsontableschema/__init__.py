@@ -26,19 +26,19 @@ class JSONTableSchema(object):
     """
 
     __valid_type_names__ = [
-        "string",
-        "number",
-        "integer",
-        "date",
-        "time",
-        "date-time",
-        "boolean",
-        "binary",
-        "geopoint",
-        "geojson",
-        "array",
-        "object",
-        "any"
+        "string",    # a string (of arbitrary length)
+        "number",    # a number including floating point numbers
+        "integer",   # an integer
+        "date",      # a date. This MUST be in ISO6801 format YYYY-MM-DD or, if not, a format field must describe the structure
+        "time",      # a time without a date
+        "date-time", # a date-time. This MUST be in ISO8601 format of YYYY-MM-DDThh:mm:ssZ in UTC time or, if not, a format field must be provided
+        "boolean",   # a boolean value (1/0, true/false)
+        "binary",    # base64 representation of binary data
+        "object"     # (alias json) a JSON-encoded object
+        "geopoint",  # has one of the following structures
+        "geojson",   # as per <<http://http://geojson.org/>>
+        "array",     # an array
+        "any"        # value of field may be any type
         ]
 
     __format_version__ = 0.1
