@@ -42,7 +42,7 @@ class JSONTableSchema(object):
       ["any", "http://www.w3.org/2001/XMLSchema#anyURI"]                                                                   # value of field may be any type
    ]
 
-   __format_version__ = "1.0-pre3.1"
+   __format_version__ = "1.0-pre3.1-partial-implementation"
 
    required_field_descriptor_keys = ["name", "type"]
 
@@ -79,6 +79,8 @@ class JSONTableSchema(object):
                raise FormatError(err_tmpl)
 
          self.add_field(field_name=stanza["name"], field_type=stanza["type"])
+
+         print self.fields
 
          self.format_version = json_string.get("json_table_schema_version",
             self.__format_version__)
