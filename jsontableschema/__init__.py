@@ -44,7 +44,10 @@ class JSONTableSchema(object):
 
    __format_version__ = "1.0-pre3.1-partial-implementation"
 
-   required_field_descriptor_keys = ["name", "type"]
+   required_field_descriptor_keys = ["name"] 
+   optional_field_descriptor_keys = ["title", "type", "format", "description", "constraints"]
+ 
+   optional_constraints_keys = ["required", "minLength", "maxLength", "unique", "pattern", "minimum", "maximum"]
 
    def __init__(self, json_string=None):
       # Initialise JSONTableSchema object, optionally from a JSON string
@@ -78,7 +81,7 @@ class JSONTableSchema(object):
                err_tmpl = "Field descriptor %d must contain key `%s'" % (i, key)
                raise FormatError(err_tmpl)
 
-         self.add_field(field_name=stanza["name"], field_type=stanza["type"])
+         self.add_field(field_name=stanza["name"])
 
          print self.fields
 
@@ -89,20 +92,15 @@ class JSONTableSchema(object):
    def field_ids(self):
       return [ i["name"] for i in self.fields ]
             
-   def add_field(self, field_name=None, field_type=None):
+   def add_field(self, field_name):
       if not isinstance(field_name, (str, unicode)):
          raise FormatError("Field `name' must be a string")
-      if not isinstance(field_type, (str, unicode)):
-         raise FormatError("Field `type' must be a string")
-
+         
       if field_name in self.field_ids:
          raise DuplicateFieldId("field_name")
       
-      self.check_type(field_type, field_name)
-
       self.fields.append({
          "name": field_name,
-         "type": field_type
       })
         
    def remove_field(self, field_id):
