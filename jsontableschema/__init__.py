@@ -20,7 +20,7 @@ import sys
 import csvdatatypes
 
 class FormatError(Exception): pass
-class DuplicateFieldId(Exception): pass
+class DuplicateFieldName(Exception): pass
 class NotJSONError(Exception): pass
 
 class JSONTableSchema(object):
@@ -75,7 +75,7 @@ class JSONTableSchema(object):
          self.format_version = json_string.get("json_table_schema_version", self.__format_version__)
 
    @property
-   def field_ids(self):
+   def field_names(self):
       return [ i["name"] for i in self.fields ]
             
    def add_field(self, field):
@@ -85,8 +85,8 @@ class JSONTableSchema(object):
       for key in self.required_field_descriptor_keys:      
          if not isinstance(field[key], (str, unicode)):
             raise FormatError("Field `name' must be a string")
-         if field["name"] in self.field_ids:
-            raise DuplicateFieldId("field 'name'")
+         if field["name"] in self.field_names:
+            raise DuplicateFieldName("field 'name'")
          field_dict[key] = field[key]
       
       for key in self.optional_field_descriptor_keys_strings:
@@ -104,7 +104,7 @@ class JSONTableSchema(object):
       self.fields.append(field_dict)
 
    def remove_field(self, field_name):
-      if field_name not in self.field_ids:
+      if field_name not in self.field_names:
          raise KeyError
       self.fields = filter(lambda i: i["name"] != field_name, self.fields)
 
@@ -118,7 +118,7 @@ class JSONTableSchema(object):
 
    def as_csv_header(self):
       csv_header = ''
-      for name in self.field_ids:
+      for name in self.field_names:
          csv_header = csv_header + '"' + str(name) + '",'
       return csv_header[:-1] + "\r\n"
 
