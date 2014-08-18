@@ -93,6 +93,10 @@ class JSONTableSchema(object):
          if key in field:
             if not isinstance(field[key], (str, unicode)):
                raise FormatError("Field `name' must be a string")
+            
+            if key == "type":
+               self.check_type(field["type"], field["name"])
+               
             field_dict[key] = field[key]
       
       #TODO: Complex types, format and constraints
@@ -113,6 +117,7 @@ class JSONTableSchema(object):
       }
 
    def check_type(self, field_type, field_name):
+  
       type_found = False
       for field_category in csvdatatypes.__valid_type_names__:
          for type in field_category:
