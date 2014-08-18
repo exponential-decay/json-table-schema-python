@@ -28,8 +28,9 @@ class JSONTableSchema(object):
    __format_version__ = "1.0-pre3.1-partial-implementation"
 
    required_field_descriptor_keys = ["name"] 
-   optional_field_descriptor_keys = ["title", "type", "format", "description", "constraints"]
- 
+   optional_field_descriptor_keys_strings = ["title", "type", "description"]
+   optional_field_descriptor_keys_lists = ["constraints"]
+   optional_field_descriptor_keys_patterns = ["format"]
    optional_constraints_keys = ["required", "minLength", "maxLength", "unique", "pattern", "minimum", "maximum"]
 
    def __init__(self, json_string=None):
@@ -54,38 +55,50 @@ class JSONTableSchema(object):
          raise FormatError("JSON key `fields' must be array")
 
       for i, stanza in enumerate(field_list):
-      
+          
          if not isinstance(stanza, dict):
             err_str = "Field descriptor %d must be a dictionary" % idx
             raise FormatError(err_str)
-
-         for key in self.required_field_descriptor_keys:
+         
+         for key in self.required_field_descriptor_keys: 
             if key not in stanza:
                err_tmpl = "Field descriptor %d must contain key `%s'" % (i, key)
                raise FormatError(err_tmpl)
-
-         self.add_field(field_name=stanza["name"])
-
-         print self.fields
-
-         self.format_version = json_string.get("json_table_schema_version",
-            self.__format_version__)
+         
+         for key in stanza:
+            if key not in self.required_field_descriptor_keys and key not in self.optional_field_descriptor_keys_strings \
+               and key not in self.optional_field_descriptor_keys_lists and key not in self.optional_field_descriptor_keys_patterns:
+               err_tmpl = "Field descriptor %d shouldn't contain key `%s'" % (i, key)
+               raise FormatError(err_tmpl)
+            
+         self.add_field(stanza)
+         self.format_version = json_string.get("json_table_schema_version", self.__format_version__)
 
    @property
    def field_ids(self):
       return [ i["name"] for i in self.fields ]
             
-   def add_field(self, field_name):
-      if not isinstance(field_name, (str, unicode)):
-         raise FormatError("Field `name' must be a string")
-         
-      if field_name in self.field_ids:
-         raise DuplicateFieldId("field_name")
-            
-      self.fields.append({
-         "name": field_name,
-      })
-        
+   def add_field(self, field):
+      
+      field_dict = {}
+
+      for key in self.required_field_descriptor_keys:      
+         if not isinstance(field[key], (str, unicode)):
+            raise FormatError("Field `name' must be a string")
+         if field["name"] in self.field_ids:
+            raise DuplicateFieldId("field 'name'")
+         field_dict[key] = field[key]
+      
+      for key in self.optional_field_descriptor_keys_strings:
+         if key in field:
+            if not isinstance(field[key], (str, unicode)):
+               raise FormatError("Field `name' must be a string")
+            field_dict[key] = field[key]
+      
+      #TODO: Complex types, format and constraints
+    
+      self.fields.append(field_dict)
+
    def remove_field(self, field_id):
       if field_id not in self.field_ids:
          raise KeyError
@@ -111,5 +124,3 @@ class JSONTableSchema(object):
          err_tmpl = "Invalid type `%s' in field descriptor for `%s'" % (field_type, field_name)
          raise FormatError(err_tmpl)
          
-         
- 
