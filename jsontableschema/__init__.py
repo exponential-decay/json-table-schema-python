@@ -99,10 +99,10 @@ class JSONTableSchema(object):
     
       self.fields.append(field_dict)
 
-   def remove_field(self, field_id):
-      if field_id not in self.field_ids:
+   def remove_field(self, field_name):
+      if field_name not in self.field_ids:
          raise KeyError
-      self.fields = filter(lambda i: i["id"] != field_id, self.fields)
+      self.fields = filter(lambda i: i["name"] != field_name, self.fields)
 
    def as_json(self):
       return json.dumps(self.as_dict(), indent=2)
